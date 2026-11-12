@@ -5,13 +5,19 @@ Aplicación monolítica con Node.js, Express, Mongoose (MongoDB Atlas) y Express
 
 ## Instalación
 
-```bash
-npm install
-cp .env.example .env   # y colocar la URI de MongoDB Atlas
-npm run dev            # o npm start
-```
-
-Abrir `http://localhost:3000`.
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+2. Crear el archivo `.env` en la raíz del proyecto:
+   ```
+   PORT=3000
+   MONGO_URI=mongodb+srv://USUARIO:CONTRASEÑA@CLUSTER.mongodb.net/
+   ```
+3. Iniciar el servidor y abrir `http://localhost:3000`:
+   ```bash
+   npm run dev
+   ```
 
 ## Endpoints (`/api/avistamientos`)
 
@@ -28,7 +34,3 @@ Abrir `http://localhost:3000`.
 
 - `GET /` — formulario de registro y tabla de avistamientos con botones Editar y Eliminar.
 - `GET /editar/:id` — formulario precargado para actualizar zona y estado de conservación.
-
-## Postman
-
-Importar `postman/BioCaqueta.postman_collection.json`. Ejecutar primero "Crear avistamiento (POST)": guarda el `_id` para las peticiones PUT y DELETE.
