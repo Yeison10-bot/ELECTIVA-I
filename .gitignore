@@ -1,0 +1,7 @@
+node_modules/
+.env
+
+# Ejercicios de clase y material del curso (no forman parte de las entregas)
+clase_servidor/
+clase_fs_json/
+*.pdf
