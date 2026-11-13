@@ -1,31 +1,48 @@
-<div class="card">
-    <div class="card-header fw-bold">Editar avistamiento</div>
-    <div class="card-body">
-        <form action="/api/avistamientos/update/{{avistamiento._id}}" method="POST" class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label">Nombre común</label>
-                <input type="text" class="form-control" value="{{avistamiento.nombreComun}}" disabled>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Nombre científico</label>
-                <input type="text" class="form-control" value="{{avistamiento.nombreCientifico}}" disabled>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Zona</label>
-                <input type="text" name="zona" class="form-control" value="{{avistamiento.zona}}" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Estado de conservación</label>
-                <select name="estadoConservacion" class="form-select">
-                    {{#each estados}}
-                    <option value="{{this}}" {{#if (eq this ../avistamiento.estadoConservacion)}}selected{{/if}}>{{this}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-success">Actualizar</button>
-                <a href="/" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+<main class="editar">
+    <div class="editar-media" style="view-transition-name: foto-{{avistamiento._id}}">
+        {{#if avistamiento.foto}}
+        <img src="{{avistamiento.foto.url}}" alt="{{avistamiento.nombreComun}}">
+        {{else}}
+        <span class="sin-foto">{{inicial avistamiento.nombreComun}}</span>
+        {{/if}}
+        <div class="editar-titulo">
+            <h1>{{avistamiento.nombreComun}}</h1>
+            <p class="cientifico">{{avistamiento.nombreCientifico}}</p>
+            <p class="editar-meta">{{avistamiento.categoria}} · {{avistamiento.investigador}} · {{fecha avistamiento.fechaRegistro}}</p>
+        </div>
+        {{#if avistamiento.foto}}
+        <p class="credito">Foto: {{avistamiento.foto.credito}} · iNaturalist</p>
+        {{/if}}
     </div>
-</div>
+
+    <form action="/api/avistamientos/update/{{avistamiento._id}}" method="POST" class="editar-form">
+        <a href="/" class="volver">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+            Volver a los avistamientos
+        </a>
+
+        <h2>Actualizar registro</h2>
+        <p class="ayuda">Puedes cambiar la zona y el estado de conservación.</p>
+
+        <label>Zona
+            <input type="text" name="zona" value="{{avistamiento.zona}}" required>
+        </label>
+
+        <fieldset>
+            <legend>Estado de conservación</legend>
+            <div class="opciones opciones-columna">
+                {{#each estados}}
+                <label class="opcion opcion-{{estadoClase this}}">
+                    <input type="radio" name="estadoConservacion" value="{{this}}" {{#if (eq this ../avistamiento.estadoConservacion)}}checked{{/if}}>
+                    <span>{{this}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </fieldset>
+
+        <div class="acciones">
+            <button type="submit" class="boton boton-primario">Guardar cambios</button>
+            <a href="/" class="boton boton-fantasma">Cancelar</a>
+        </div>
+    </form>
+</main>

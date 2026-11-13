@@ -13,11 +13,22 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Archivos estáticos (CSS y JS de las vistas)
+app.use(express.static(path.join(import.meta.dirname, 'public')));
+
+const CLASES_ESTADO = {
+    'Preocupación menor': 'lc',
+    'Vulnerable': 'vu',
+    'En peligro': 'en'
+};
+
 // Configuración de Handlebars
 app.engine('handlebars', engine({
     helpers: {
         eq: (a, b) => a === b,
-        fecha: (f) => new Date(f).toLocaleDateString('es-CO')
+        fecha: (f) => new Date(f).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }),
+        estadoClase: (estado) => CLASES_ESTADO[estado] ?? 'lc',
+        inicial: (texto) => texto?.trim().charAt(0).toUpperCase() ?? ''
     }
 }));
 app.set('view engine', 'handlebars');

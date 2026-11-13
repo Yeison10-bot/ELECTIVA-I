@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { Avistamiento } from '../models/Avistamiento.js';
-
 const router = Router();
 
 const esFormulario = (req) =>

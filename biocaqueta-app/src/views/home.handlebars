@@ -1,84 +1,144 @@
-<div class="card mb-4">
-    <div class="card-header fw-bold">Registrar avistamiento</div>
-    <div class="card-body">
-        <form action="/api/avistamientos" method="POST" class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">Nombre común</label>
-                <input type="text" name="nombreComun" class="form-control" placeholder="Danta amazónica" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Nombre científico</label>
-                <input type="text" name="nombreCientifico" class="form-control" placeholder="Tapirus terrestris" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Categoría</label>
-                <select name="categoria" class="form-select" required>
-                    {{#each categorias}}
-                    <option value="{{this}}">{{this}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Zona</label>
-                <input type="text" name="zona" class="form-control" placeholder="Río Hacha" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Estado de conservación</label>
-                <select name="estadoConservacion" class="form-select">
-                    {{#each estados}}
-                    <option value="{{this}}">{{this}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Investigador</label>
-                <input type="text" name="investigador" class="form-control" required>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-success">Guardar</button>
-            </div>
-        </form>
-    </div>
-</div>
+{{#if destacado}}
+<section class="destacado">
+    {{#if destacado.foto}}
+    <img class="destacado-foto" src="{{destacado.foto.url}}" alt="{{destacado.nombreComun}}">
+    {{/if}}
+    <div class="destacado-velo"></div>
 
-<h4>Avistamientos registrados</h4>
-{{#if avistamientos.length}}
-<div class="table-responsive">
-    <table class="table table-striped table-hover align-middle bg-white">
-        <thead class="table-success">
-            <tr>
-                <th>Nombre común</th>
-                <th>Nombre científico</th>
-                <th>Categoría</th>
-                <th>Zona</th>
-                <th>Estado</th>
-                <th>Investigador</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each avistamientos}}
-            <tr>
-                <td>{{nombreComun}}</td>
-                <td><em>{{nombreCientifico}}</em></td>
-                <td>{{categoria}}</td>
-                <td>{{zona}}</td>
-                <td>{{estadoConservacion}}</td>
-                <td>{{investigador}}</td>
-                <td>{{fecha fechaRegistro}}</td>
-                <td class="text-nowrap">
-                    <a href="/editar/{{_id}}" class="btn btn-sm btn-warning">Editar</a>
-                    <form action="/api/avistamientos/delete/{{_id}}" method="POST" class="d-inline"
-                          onsubmit="return confirm('¿Eliminar este avistamiento?')">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
+    <div class="destacado-contenido">
+        <h1>{{destacado.nombreComun}}</h1>
+        <p class="cientifico">{{destacado.nombreCientifico}}</p>
+        <p class="destacado-nota">Último avistamiento, registrado el {{fecha destacado.fechaRegistro}}</p>
+
+        <ul class="datos">
+            <li><span class="estado estado-{{estadoClase destacado.estadoConservacion}}">{{destacado.estadoConservacion}}</span></li>
+            <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                {{destacado.zona}}
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                {{destacado.investigador}}
+            </li>
+            <li>{{destacado.categoria}}</li>
+        </ul>
+
+        <div class="acciones">
+            <a href="/editar/{{destacado._id}}" class="boton boton-claro">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>
+                Editar
+            </a>
+            <form action="/api/avistamientos/delete/{{destacado._id}}" method="POST" data-confirmar="¿Eliminar el avistamiento de {{destacado.nombreComun}}?">
+                <button type="submit" class="boton boton-fantasma">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                    Eliminar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {{#if destacado.foto}}
+    <p class="credito">Foto: {{destacado.foto.credito}} · iNaturalist</p>
+    {{/if}}
+</section>
+
+<main class="muro">
+    <div class="muro-cabecera">
+        <h2>Avistamientos registrados</h2>
+        <p>{{total}} en MongoDB Atlas</p>
+    </div>
+
+    {{#each filas}}
+    <section class="fila" style="--i: {{@index}}">
+        <h3>{{titulo}} <span>{{items.length}}</span></h3>
+        <div class="carril">
+            {{#each items}}
+            <article class="tarjeta" style="--j: {{@index}}">
+                <div class="tarjeta-media" style="view-transition-name: foto-{{_id}}">
+                    {{#if foto}}
+                    <img src="{{foto.miniatura}}" alt="{{nombreComun}}" loading="lazy">
+                    {{else}}
+                    <span class="sin-foto">{{inicial nombreComun}}</span>
+                    {{/if}}
+                </div>
+                <div class="tarjeta-texto">
+                    <h4>{{nombreComun}}</h4>
+                    <p class="cientifico">{{nombreCientifico}}</p>
+                    <div class="tarjeta-detalle">
+                        <span class="estado estado-{{estadoClase estadoConservacion}}">{{estadoConservacion}}</span>
+                        <p>{{zona}} · {{investigador}}</p>
+                        <p>{{fecha fechaRegistro}}</p>
+                        <div class="tarjeta-acciones">
+                            <a href="/editar/{{_id}}" class="boton boton-claro boton-chico">Editar</a>
+                            <form action="/api/avistamientos/delete/{{_id}}" method="POST" data-confirmar="¿Eliminar el avistamiento de {{nombreComun}}?">
+                                <button type="submit" class="boton boton-fantasma boton-chico">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
             {{/each}}
-        </tbody>
-    </table>
-</div>
+        </div>
+    </section>
+    {{/each}}
+</main>
 {{else}}
-<p class="text-muted">Aún no hay avistamientos registrados.</p>
+<section class="vacio">
+    <h1>Aún no hay avistamientos</h1>
+    <p>Registra la primera especie observada en campo. Se guardará en MongoDB Atlas y aparecerá aquí con su foto.</p>
+    <a href="/#registrar" class="boton boton-primario" data-abrir-registro>Registrar el primero</a>
+</section>
 {{/if}}
+
+<dialog class="panel" id="registrar" aria-labelledby="registrar-titulo">
+    <form action="/api/avistamientos" method="POST" class="panel-form">
+        <div class="panel-cabecera">
+            <h2 id="registrar-titulo">Nuevo avistamiento</h2>
+            <button type="button" class="cerrar" data-cerrar aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+        </div>
+
+        <label>Nombre común
+            <input type="text" name="nombreComun" placeholder="Danta amazónica" required>
+        </label>
+        <label>Nombre científico
+            <input type="text" name="nombreCientifico" placeholder="Tapirus terrestris" required>
+            <small>Si el nombre científico es correcto, se agrega la foto de la especie.</small>
+        </label>
+
+        <fieldset>
+            <legend>Categoría</legend>
+            <div class="opciones">
+                {{#each categorias}}
+                <label class="opcion">
+                    <input type="radio" name="categoria" value="{{this}}" required {{#if @first}}checked{{/if}}>
+                    <span>{{this}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </fieldset>
+
+        <label>Zona
+            <input type="text" name="zona" placeholder="Río Hacha" required>
+        </label>
+
+        <fieldset>
+            <legend>Estado de conservación</legend>
+            <div class="opciones">
+                {{#each estados}}
+                <label class="opcion opcion-{{estadoClase this}}">
+                    <input type="radio" name="estadoConservacion" value="{{this}}" {{#if @first}}checked{{/if}}>
+                    <span>{{this}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </fieldset>
+
+        <label>Investigador
+            <input type="text" name="investigador" placeholder="Nombre de quien reporta" required>
+        </label>
+
+        <button type="submit" class="boton boton-primario boton-ancho">Guardar en Atlas</button>
+    </form>
+</dialog>
